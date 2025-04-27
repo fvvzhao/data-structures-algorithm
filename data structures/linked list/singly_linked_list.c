@@ -6,80 +6,86 @@ typedef struct Node {
     struct Node* next;
 } Node;
 
-typedef struct SinglyLinkedList {
-    struct Node* head;
+typedef struct LinkedList {
+    Node* head;
     int size;
-} SinglyLinkedList;
+} LinkedList;
 
-void create(SinglyLinkedList* ptr);
-void insert(SinglyLinkedList* ptr, int position, int value);
-void delete(SinglyLinkedList* ptr, int position);
-void print_linked_list(SinglyLinkedList* ptr);
+LinkedList* create_linked_list();
+void insert(LinkedList* linked_list, int pos, int value);
+Node* delete(LinkedList* linked_list, int pos);
+void print_linked_list(LinkedList* linked_list);
 
 int main(void) {
 
-    SinglyLinkedList test;
-    SinglyLinkedList* ptr = &test;
-    create(ptr);
+    LinkedList* linked_list = create_linked_list();
 
-    insert(ptr, 1, 1);
-    insert(ptr, 2, 2);
-    insert(ptr, 3, 3);
-    print_linked_list(ptr);
     return 0;
 }
 
-// 带头节点
-void create(SinglyLinkedList* ptr) {
-    ptr->head = (Node*)malloc(sizeof(Node));
-    if (ptr->head == NULL) {
+LinkedList* create_linked_list() {
+    LinkedList* linked_list = (LinkedList*)malloc(sizeof(LinkedList));
+    if (linked_list == NULL) {
         puts("内存分配失败");
+        return NULL;
     }
-    ptr->head->next = NULL;
-    ptr->size = 0;
+    linked_list->head = (Node*)malloc(sizeof(Node));
+    if (linked_list->head == NULL) {
+        puts("内存分配失败");
+        free(linked_list);
+        return NULL;
+    }
+    linked_list->head->next = NULL;
+    linked_list->size = 0;
+    return linked_list;
 }
 
-void insert(SinglyLinkedList* ptr, int position, int value) {
-    if (position < 1 || position > ptr->size + 1) {
+void insert(LinkedList* linked_list, int pos, int value) {
+    if (pos < 1 || pos > linked_list->size + 1) {
         puts("插入失败");
         return;
     }
-    int temp = 0;
-    Node* prev = ptr->head;
-    while (temp < position - 1) {
-        temp++;
-        prev = prev->next;
+    int t = 0;
+    Node* pre = linked_list->head;
+    while (t < pos - 1) {
+        t++;
+        pre = pre->next;
     }
     Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) {
+        puts("内存分配失败");
+        free(pre);
+        return;
+    }
     new_node->data = value;
     new_node->next = NULL;
 
-    new_node->next = prev->next;
-    prev->next = new_node;
-    ptr->size++;
+    new_node->next = pre->next;
+    pre->next = new_node;
+    linked_list->size++;
 }
 
-void delete(SinglyLinkedList* ptr, int position) {
-    if (position < 1 || position > ptr->size) {
+Node* delete(LinkedList* linked_list, int pos) {
+    if (pos < 1 || pos > linked_list->size || linked_list->size == 0) {
         puts("删除失败");
-        return;
+        return NULL;
     }
-    int temp = 0;
-    Node* prev = ptr->head;
-    while (temp < position - 1) {
-        temp++;
-        prev = prev->next;
+    int t = 0;
+    Node* pre = linked_list->head;
+    while (t < pos - 1) {
+        t++;
+        pre = pre->next;
     }
-    Node* target = prev->next;
-    prev->next = target->next;
-    free(target);
-    ptr->size--;
+    Node* target = pre->next;
+    pre->next = target->next;
+    linked_list->size--;
+    return target;
 }
 
-void print_linked_list(SinglyLinkedList* ptr) {
-    Node* temp = ptr->head->next;
-    while (temp != NULL) {
-        printf("%d ", temp->data);
-        temp = temp->next;
+void print_linked_list(LinkedList* linked_list) {
+    Node* t = linked_list->head->next;
+    while (t != NULL) {
+        printf("%d ", t->data);
+        t = t->next;
     }
 }
