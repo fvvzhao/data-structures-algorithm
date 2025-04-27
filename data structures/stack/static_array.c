@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CAPACITY 10
 
@@ -7,49 +8,51 @@ typedef struct Stack {
     int top;
 } Stack;
 
-void create(Stack* ptr);
-void push(Stack* ptr, int value);
-void pop(Stack* ptr, int* value);
-int get_top(Stack* ptr);
+Stack* create_stack();
+void push(Stack* stack, int value);
+int pop(Stack* stack);
+int get_top(Stack* stack);
 
 int main(void) {
 
-    Stack test;
-    Stack* ptr = &test;
-    create(ptr);
-
-    push(ptr, 1);
-    printf("top is %d\n", get_top(ptr));
+    Stack* stack = create_stack();
 
     return 0; 
 }
 
-void create(Stack* ptr) {
-    ptr->top = -1;
+Stack* create_stack() {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    if (stack == NULL) {
+        puts("内存分配失败");
+        return NULL;
+    }
+    stack->top = -1;
+    return stack;
 }
 
-void push(Stack* ptr, int value) {
-    if (ptr->top == CAPACITY - 1) {
+void push(Stack* stack, int value) {
+    if (stack->top == CAPACITY - 1) {
         puts("栈已满");
         return;
     }
-    ptr->top++;
-    ptr->data[ptr->top] = value;
+    stack->top++;
+    stack->data[stack->top] = value;
 }
 
-void pop(Stack* ptr, int* value) {
-    if (ptr->top == -1) {
-        puts("栈已空");
-        return;
-    }
-    *value = ptr->data[ptr->top];
-    ptr->top--;
-}
-
-int get_top(Stack* ptr) {
-    if (ptr->top == -1) {
+int pop(Stack* stack) {
+    if (stack->top == -1) {
         puts("栈已空");
         return -1;
     }
-    return ptr->data[ptr->top];
+    int t = stack->data[stack->top];
+    stack->top--;
+    return t;
+}
+
+int get_top(Stack* stack) {
+    if (stack->top == -1) {
+        puts("栈已空");
+        return -1;
+    }
+    return stack->data[stack->top];
 }
