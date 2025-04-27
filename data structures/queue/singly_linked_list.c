@@ -11,67 +11,75 @@ typedef struct Queue {
     Node* tail;
 } Queue;
 
-void create(Queue* ptr);
-void en_queue(Queue* ptr, int value);
-void de_queue(Queue* ptr, int* value);
-void print_queue(Queue* ptr);
+Queue* create_queue();
+void en_queue(Queue* q, int value);
+Node* de_queue(Queue* q);
+void print_queue(Queue* q);
 
 int main(void) {
 
-    Queue test;
-    Queue* ptr = &test;
-    create(ptr);
+    Queue* q = create_queue();
 
-    en_queue(ptr, 1);
-    en_queue(ptr, 2);
-    en_queue(ptr, 3);
-    en_queue(ptr, 4);
-    en_queue(ptr, 5);
+    en_queue(q, 1);
+    en_queue(q, 2);
+    en_queue(q, 3);
+    en_queue(q, 4);
+    en_queue(q, 5);
 
-    print_queue(ptr);
+    print_queue(q);
     return 0;
 }
 
-void create(Queue* ptr) {
-    ptr->head = (Node*)malloc(sizeof(Node));
-    if (ptr->head == NULL) {
+Queue* create_queue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    if (q == NULL) {
+        puts("内存分配失败"); 
+        return NULL;
+    }
+    q->head = (Node*)malloc(sizeof(Node));
+    if (q->head == NULL) {
+        puts("内存分配失败");
+        free(q);
+        return NULL;
+    }
+    q->head->next = NULL;
+    q->tail = q->head;
+    return q;
+}
+
+void en_queue(Queue* q, int value) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) {
         puts("内存分配失败");
         return;
     }
-    ptr->head->next = NULL;
-    ptr->tail = ptr->head;
-}
-
-void en_queue(Queue* ptr, int value) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
     new_node->data = value;
     new_node->next = NULL;
 
-    ptr->tail->next = new_node;
-    ptr->tail = new_node;
+    q->tail->next = new_node;
+    q->tail = new_node;
 }
 
-void de_queue(Queue* ptr, int* value) {
-    if (ptr->head == ptr->tail) {
+Node* de_queue(Queue* q) {
+    if (q->head == q->tail) {
         puts("队列已空");
-        return;
+        return NULL;
     }
-    Node* target = ptr->head->next;
-    *value = target->data;
-    ptr->head->next = target->next;
-    if (target == ptr->tail) {
-        free(target);
-        ptr->tail = ptr->head;
+    Node* target = q->head->next;
+    q->head->next = target->next;
+    if (target == q->tail) {
+        q->tail = q->head;
+        return target;
     }
     else {
-        free(target);
+        return target;
     }
 }
 
-void print_queue(Queue* ptr) {
-    int value;
-    while (ptr->head != ptr->tail) {
-        de_queue(ptr, &value);
-        printf("%d ", value);
+void print_queue(Queue* q) {
+    Node* t = q->head->next;
+    while (t != NULL) {
+        printf("%d ", t->data);
+        t = t->next;
     }
 }
