@@ -11,10 +11,10 @@ typedef struct Stack {
     Node* top;
 } Stack;
 
-void create(Stack* ptr);
-void push(Stack* ptr, int value);
-void pop(Stack* ptr, int* value);
-Node* get_top(Stack* ptr);
+Stack* create_stack();
+void push(Stack* stack, int value);
+Node* pop(Stack* stack);
+Node* get_top(Stack* stack);
 
 int main(void) {
 
@@ -28,40 +28,50 @@ int main(void) {
     return 0;
 }
 
-void create(Stack* ptr) {
-    ptr->head = (Node*)malloc(sizeof(Node));
-    if (ptr->head == NULL) {
+Stack* create_stack() {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    if (stack == NULL) {
+        puts("内存分配失败");
+        return NULL;
+    }
+    stack->head = (Node*)malloc(sizeof(Node));
+    if (stack->head == NULL) {
+        puts("内存分配失败");
+        free(stack);
+        return NULL;
+    }
+    stack->head->next = NULL;
+    stack->top = stack->head;
+    return stack;
+}
+
+void push(Stack* stack, int value) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) {
         puts("内存分配失败");
         return;
     }
-    ptr->head->next = NULL;
-    ptr->top = ptr->head;
-}
-
-void push(Stack* ptr, int value) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
     new_node->data = value;
     new_node->next = NULL;
 
-    new_node->next = ptr->top->next;
-    ptr->top->next = new_node;
+    new_node->next = stack->top->next;
+    stack->top->next = new_node;
 }
 
-void pop(Stack* ptr, int* value) {
-    if (ptr->head->next == NULL) {
-        puts("栈已空");
-        return;
-    }
-    Node* target = ptr->top->next;
-    *value = target->data;
-    ptr->top->next = target->next;
-    free(target);
-}
-
-Node* get_top(Stack* ptr) {
-    if (ptr->head->next == NULL) {
+Node* pop(Stack* stack) {
+    if (stack->head->next == NULL) {
         puts("栈已空");
         return NULL;
     }
-    return ptr->top->next;
+    Node* target = stack->top->next;
+    stack->top->next = target->next;
+    return target;
+}
+
+Node* get_top(Stack* stack) {
+    if (stack->head->next == NULL) {
+        puts("栈已空");
+        return NULL;
+    }
+    return stack->top->next;
 }
