@@ -1,85 +1,80 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CAPACITY 10
 
-typedef struct StaticArray {
+typedef struct Array {
     int data[CAPACITY];
     int size;
-} StaticArray;
+} Array;
 
-void create(StaticArray* ptr);
-void insert(StaticArray* ptr, int index, int value);
-void delete(StaticArray* ptr, int index);
-void update(StaticArray* ptr, int index, int value);
-void select(StaticArray* ptr, int index);
-void print_array(StaticArray* ptr);
+Array* create_array();
+void insert(Array* array, int index, int value);
+int delete(Array* array, int index);
+void update(Array* array, int index, int value);
+int select(Array* array, int index);
+void print_array(Array* array);
 
 int main(void) {
 
-    StaticArray test;
-    StaticArray* ptr = &test;
-    create(ptr);
-
-    insert(ptr, 0, 1);
-    insert(ptr, 1, 2);
-    insert(ptr, 2, 3);
-    print_array(ptr);
+    Array* array = create_array();
 
     return 0;
 }
 
-// 创
-void create(StaticArray* ptr) {
-    ptr->size = 0;
+Array* create_array() {
+    Array* array = (Array*)malloc(sizeof(Array));
+    if (array == NULL) {
+        puts("内存分配失败");
+        return NULL;
+    }
+    array->size = 0;
+    return array;
 }
 
-// 增
-void insert(StaticArray* ptr, int index, int value) {
-    if (index < 0 || index > ptr->size || ptr->size == CAPACITY) {
+void insert(Array* array, int index, int value) {
+    if (index < 0 || index > array->size || array->size == CAPACITY) {
         puts("插入失败");
         return;
     }
-    for (int i = ptr->size - 1; i >= index; i--) {
-        ptr->data[i + 1] = ptr->data[i];
+    for (int i = array->size - 1; i >= index; i--) {
+        array->data[i + 1] = array->data[i];
     }
-    ptr->data[index] = value;
-    ptr->size++;
+    array->data[index] = value;
+    array->size++;
 }
 
-// 删
-void delete(StaticArray* ptr, int index) {
-    if (index < 0 || index > ptr->size - 1 || ptr->size == 0) {
+int delete(Array* array, int index) {
+    if (index < 0 || index > array->size - 1 || array->size == 0) {
         puts("删除失败");
-        return;
+        return -1;
     }
-    for (int i = index + 1; i < ptr->size; i++) {
-        ptr->data[i - 1] = ptr->data[i];
+    int t = array->data[index];
+    for (int i = index + 1; i < array->size; i++) {
+        array->data[i - 1] = array->data[i];
     }
-    ptr->size--;
+    array->size--;
+    return t;
 }
 
-// 改
-void update(StaticArray* ptr, int index, int value) {
-    if (index < 0 || index > ptr->size - 1 || ptr->size == 0) {
+void update(Array* array, int index, int value) {
+    if (index < 0 || index > array->size - 1 || array->size == 0) {
         puts("更新失败");
         return;
     }
-    ptr->data[index] = value;
+    array->data[index] = value;
 }
 
-// 查
-void select(StaticArray* ptr, int index) {
-    if (index < 0 || index > ptr->size - 1 || ptr->size == 0) {
+int select(Array* array, int index) {
+    if (index < 0 || index > array->size - 1 || array->size == 0) {
         puts("查找失败");
-        return;
+        return -1;
     }
-    printf("您所查找的索引为 %d 的元素的数值为：%d\n", index, ptr->data[index]);
+    return array->data[index];
 }
 
-// 遍历
-void print_array(StaticArray* ptr) {
-    for (int i = 0; i < ptr->size; i++) {
-        printf("%d ", ptr->data[i]);
+void print_array(Array* array) {
+    for (int i = 0; i < array->size; i++) {
+        printf("%d ", array->data[i]);
     }
-    printf("\n");
 }
